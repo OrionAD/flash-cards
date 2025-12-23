@@ -1,155 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>B787 Systems Flashcards</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fluid Cooling Flashcard Quiz</title>
     <style>
         :root {
             --primary: #0056b3;
-            --bg: #f4f7f6;
-            --card-bg: #ffffff;
+            --secondary: #6c757d;
+            --bg: #f0f2f5;
+            --card-white: #ffffff;
+            --text-main: #1c1e21;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
             padding: 20px;
         }
-        .container { max-width: 600px; width: 100%; text-align: center; }
-        h1 { color: var(--primary); margin-bottom: 10px; }
-        .stats { margin-bottom: 20px; font-weight: bold; color: #555; }
-        
-        /* Flashcard Styling */
+        .app-container {
+            width: 100%;
+            max-width: 700px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 { color: var(--primary); margin: 0; font-size: 1.5rem; }
+        .progress-bar {
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.25s ease;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        /* Flashcard */
         .flashcard {
-            background-color: var(--card-bg);
-            height: 300px;
             perspective: 1000px;
+            height: 320px;
             cursor: pointer;
             margin-bottom: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .inner-card {
+        .card-inner {
             position: relative;
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            border-radius: 12px;
         }
-        .flashcard.flipped .inner-card { transform: rotateY(180deg); }
-        .front, .back {
+        .flashcard.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
             position: absolute;
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 30px;
+            padding: 28px;
             box-sizing: border-box;
-            border-radius: 15px;
-            font-size: 1.2rem;
+            border-radius: 12px;
+            background: var(--card-white);
         }
-        .back {
-            background-color: #eef2ff;
+        .card-back {
             transform: rotateY(180deg);
-            color: #333;
+            background-color: #f8f9ff;
             border: 2px solid var(--primary);
+            color: var(--text-main);
+            font-size: 1.05rem;
+            line-height: 1.45;
         }
-        .front { font-weight: 600; color: var(--primary); }
-
-        /* Buttons */
-        .controls { display: flex; gap: 10px; justify-content: center; }
-        button {
-            padding: 12px 24px;
+        .card-front {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .category-pill {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            font-size: 0.72rem;
+            background: #e1e4e8;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #444;
+        }
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .controls-top {
+            display:flex;
+            gap:12px;
+            justify-content:center;
+            margin-bottom:8px;
+            align-items:center;
+        }
+        select {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #d6d6d6;
             font-size: 1rem;
+            background: white;
+        }
+        button {
+            padding: 12px;
             border: none;
             border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            font-size: 1rem;
+            transition: all 0.15s;
         }
-        .btn-prev { background: #ddd; }
+        .btn-prev { background: #fff; color: var(--secondary); border: 1px solid #ddd; }
         .btn-next { background: var(--primary); color: white; }
-        button:hover { opacity: 0.9; transform: translateY(-2px); }
-        .category-tag {
-            font-size: 0.8rem;
-            background: #000;
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            display: inline-block;
+        button:active { transform: scale(0.98); }
+        .hint {
+            text-align: center;
+            color: var(--secondary);
+            font-size: 0.86rem;
+            margin-top: 14px;
+        }
+        @media (max-width:600px){
+            .flashcard { height: 360px; }
         }
     </style>
 </head>
 <body>
+<div class="app-container">
+    <header>
+        <h1>Fluid Cooling Flashcard Quiz</h1>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <div class="stats">
+            <span id="current-system">Subject: Loading</span>
+            <span id="card-count">0 / 0</span>
+        </div>
+    </header>
 
-<div class="container">
-    <h1>787 Study Tool</h1>
-    <div id="category" class="category-tag">System 1: CCS</div>
-    <div class="stats" id="stats">Card 1 of 50</div>
-
-    <div class="flashcard" onclick="this.classList.toggle('flipped')">
-        <div class="inner-card">
-            <div class="front" id="question">Loading...</div>
-            <div class="back" id="answer">Loading...</div>
+    <div class="flashcard" id="main-card" onclick="this.classList.toggle('flipped')">
+        <div class="card-inner">
+            <div class="card-front">
+                <span class="category-pill" id="cat-label">Subject</span>
+                <div id="q-text">Loading Question...</div>
+            </div>
+            <div class="card-back">
+                <div id="a-text">Loading Answer...</div>
+            </div>
         </div>
     </div>
 
-    <div class="controls">
-        <button class="btn-prev" onclick="prevCard()">Previous</button>
-        <button class="btn-next" onclick="nextCard()">Next Card</button>
+    <div class="controls-top">
+        <label for="subject-select" style="color:var(--secondary);font-weight:600;margin-right:6px;">Select Subject:</label>
+        <select id="subject-select">
+            <option value="fluid">Fluid Cooling (50)</option>
+            <option value="equipment">Equipment Cooling (50)</option>
+            <option value="pressurisation">Pressurisation (50)</option>
+        </select>
     </div>
+
+    <div class="controls">
+        <button class="btn-prev" id="prev-btn">Previous</button>
+        <button class="btn-next" id="next-btn">Next Card</button>
+    </div>
+
+    <p class="hint">Tap the card to flip (or press Space). Use ← → to navigate.</p>
 </div>
 
 <script>
-    // Data extracted from your provided list
-    const cardData = [
-        { s: "CCS", q: "What is the primary purpose of the Common Core System?", a: "Integrated modular avionics providing shared computing, networking, and I/O resources." },
-        { s: "CCS", q: "What are the three main subsystems of the CCS?", a: "CCR cabinets, the CDN, and RDCs." },
-        { s: "CCS", q: "How many CCR cabinets are on the airplane?", a: "Two." },
-        { s: "ELECTRICAL", q: "What are the primary AC power sources?", a: "Four VFSGs (Variable Frequency Starter Generators)." },
-        { s: "ELECTRICAL", q: "What is the nominal voltage of the main AC buses?", a: "235V AC." },
-        { s: "HYDRAULIC", q: "How many main hydraulic systems does the airplane have?", a: "Three (Left, Center, Right)." },
-        { s: "HYDRAULIC", q: "What is the nominal operating pressure?", a: "5,000 PSI." },
-        { s: "FLIGHT CONTROLS", q: "What are the three main applications of the IFCS?", a: "AFF, PFCF, and HLF." },
-        { s: "FUEL/NGS", q: "What is the purpose of the NGS?", a: "To decrease autoignition risk by increasing nitrogen concentration in fuel tanks." }
-    ];
+/*
+  Three decks (50 questions each) provided by the user.
+  Each item: { q: "...", a: "..." }
+*/
 
-    let currentIndex = 0;
+const fluidCooling = [
+{"q":"What are the two primary fluid cooling systems on the 787?","a":"The Power Electronics Cooling System (PECS) and the Integrated Cooling System (ICS)."},
+{"q":"What is the specific composition of the PECS liquid coolant?","a":"A mixture of 60 percent propylene-glycol and 40 percent de-ionized water (PGW)."},
+{"q":"Where are the PECS liquid cooling pump packages located?","a":"In the left and right main gear wheel wells."},
+{"q":"What is the normal operating pressure for the PECS?","a":"200 psig."},
+{"q":"Which equipment does the PECS left loop specifically cool?","a":"Supplemental cooling units (SCU) 2 and 4 condensers, SCU motor controllers 2 and 4, and equipment on the P700/E5 rack."},
+{"q":"What are the two primary functions of the Integrated Cooling System (ICS)?","a":"To provide liquid cooling for galley refrigeration and to decrease the temperature of the lower recirculation air."},
+{"q":"How many pumps are in each PECS pump package, and how do they operate?","a":"There are two pumps; one operates as primary while the other is back-up, changing roles after each flight."},
+{"q":"What is the approximate life of the PECS cooling fluid?","a":"Approximately 12,000 hours."},
+{"q":"What color is the DowFrost coolant used in these systems?","a":"Orange."},
+{"q":"What is the purpose of the PECS 3-way diverter valve (TCV)?","a":"It controls the temperature of the coolant by directing it either through or around the ram air heat exchanger."},
+{"q":"Where are the ICS Supplemental Cooling Units (SCUs) located?","a":"In the bulk cargo compartment area."},
+{"q":"What type of refrigeration system do the SCUs use?","a":"A vapor-cycle refrigeration system using R134 refrigerant."},
+{"q":"How does the ICS remove heat generated by its own SCU compressors?","a":"It uses PECS cooling fluid to remove heat from the SCU condensers and motor controllers."},
+{"q":"What is the total system capacity of the ICS?","a":"25 gallons (95 liters)."},
+{"q":"What is the difference in PECS heat exchangers on the 787-10?","a":"They are twice as large as those on the 787-8 and -9."},
+{"q":"What are the two main fluid cooling systems on the 787?","a":"The Power Electronics Cooling System (PECS) and the Integrated Cooling System (ICS)."},
+{"q":"What is the specific coolant used in these systems?","a":"BMS 3-42, a mixture of 60% propylene-glycol and 40% water (PGW)."},
+{"q":"What are the three primary components PECS provides cooling for?","a":"Power electronics equipment, ICS supplemental cooling units (SCU), and motor controllers."},
+{"q":"What are the two primary functions of the ICS?","a":"To provide liquid cooling for galley refrigeration and to cool the lower recirculation air."},
+{"q":"Where is the PECS pump package located?","a":"In the main gear wheel wells."},
+{"q":"Where is the ICS pump package located?","a":"In the right wheel well."},
+{"q":"How many pump packages are in the PECS?","a":"Two packages, one for each loop."},
+{"q":"When does the operating PECS pump change?","a":"4 minutes after weight-on-wheels (WOW)."},
+{"q":"What is the purpose of the PECS 3-Way Diverter Valve (TCV)?","a":"It directs coolant either through or around the ram air heat exchanger to control temperature."},
+{"q":"What component calculates the control of the PECS?","a":"The Common Core System (CCS)."},
+{"q":"What causes the PECS TCV to open automatically?","a":"If the two temperature sensors do not agree or the sensed temperature is not within limits."},
+{"q":"How often must the PECS heat exchangers be restored off-airplane?","a":"Every 3 years."},
+{"q":"Where does the ICS loop travel in the airplane?","a":"From the aft part of the airplane to the forward part and back."},
+{"q":"What refrigerant is used in the ICS SCUs?","a":"R134a."},
+{"q":"How does the ICS remove heat from its own SCU condensers?","a":"It uses PECS cooling fluid."},
+{"q":"What is the total fluid capacity of the ICS?","a":"25 gallons (95 liters)."},
+{"q":"What type of reservoir does the ICS pump package use?","a":"A bootstrap reservoir."},
+{"q":"What is the maintenance interval for the ICS message \"PUMP FILTER BYPASS\"?","a":"Every 8,000 flight hours."},
+{"q":"Where is the ICS Galley Pressure Control Valve located?","a":"In the crown area."},
 
-    function updateCard() {
-        const card = cardData[currentIndex];
-        const flashcardElement = document.querySelector('.flashcard');
-        flashcardElement.classList.remove('flipped');
-        
-        setTimeout(() => {
-            document.getElementById('question').innerText = card.q;
-            document.getElementById('answer').innerText = card.a;
-            document.getElementById('category').innerText = card.s;
-            document.getElementById('stats').innerText = `Card ${currentIndex + 1} of ${cardData.length}`;
-        }, 150);
-    }
+];
 
-    function nextCard() {
-        currentIndex = (currentIndex + 1) % cardData.length;
-        updateCard();
-    }
+// Placeholder for additional decks
+const equipmentCooling = [];
+const pressurisation = [];
 
-    function prevCard() {
-        currentIndex = (currentIndex - 1 + cardData.length) % cardData.length;
-        updateCard();
-    }
+// Basic UI logic
+let currentDeck = fluidCooling;
+let currentIndex = 0;
 
-    // Initialize
-    updateCard();
+const qText = document.getElementById('q-text');
+const aText = document.getElementById('a-text');
+const catLabel = document.getElementById('cat-label');
+const cardCount = document.getElementById('card-count');
+const currentSystem = document.getElementById('current-system');
+const progressFill = document.getElementById('progress-fill');
+const mainCard = document.getElementById('main-card');
+
+function render() {
+  if (!currentDeck || currentDeck.length === 0) {
+    qText.textContent = 'No cards in this deck.';
+    aText.textContent = '';
+    cardCount.textContent = '0 / 0';
+    progressFill.style.width = '0%';
+    return;
+  }
+  const item = currentDeck[currentIndex];
+  qText.textContent = item.q;
+  aText.textContent = item.a;
+  catLabel.textContent = (document.getElementById('subject-select').value || 'subject');
+  cardCount.textContent = (currentIndex + 1) + ' / ' + currentDeck.length;
+  progressFill.style.width = ((currentIndex + 1) / currentDeck.length * 100) + '%';
+}
+
+function nextCard() {
+  if (!currentDeck || currentDeck.length === 0) return;
+  currentIndex = (currentIndex + 1) % currentDeck.length;
+  mainCard.classList.remove('flipped');
+  render();
+}
+function prevCard() {
+  if (!currentDeck || currentDeck.length === 0) return;
+  currentIndex = (currentIndex - 1 + currentDeck.length) % currentDeck.length;
+  mainCard.classList.remove('flipped');
+  render();
+}
+
+document.getElementById('next-btn').addEventListener('click', nextCard);
+document.getElementById('prev-btn').addEventListener('click', prevCard);
+
+document.getElementById('subject-select').addEventListener('change', (e) => {
+  const v = e.target.value;
+  if (v === 'fluid') currentDeck = fluidCooling;
+  else if (v === 'equipment') currentDeck = equipmentCooling;
+  else if (v === 'pressurisation') currentDeck = pressurisation;
+  currentIndex = 0;
+  currentSystem.textContent = 'Subject: ' + e.target.options[e.target.selectedIndex].text;
+  render();
+});
+
+// keyboard
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
+    mainCard.classList.toggle('flipped');
+    e.preventDefault();
+  } else if (e.key === 'ArrowRight') nextCard();
+  else if (e.key === 'ArrowLeft') prevCard();
+});
+
+// init
+currentSystem.textContent = 'Subject: Fluid Cooling (50)';
+render();
 </script>
-
 </body>
 </html>
