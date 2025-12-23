@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B787 Systems Flashcards</title>
+    <style>
+        :root {
+            --primary: #0056b3;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { max-width: 600px; width: 100%; text-align: center; }
+        h1 { color: var(--primary); margin-bottom: 10px; }
+        .stats { margin-bottom: 20px; font-weight: bold; color: #555; }
+        
+        /* Flashcard Styling */
+        .flashcard {
+            background-color: var(--card-bg);
+            height: 300px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .inner-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped .inner-card { transform: rotateY(180deg); }
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-sizing: border-box;
+            border-radius: 15px;
+            font-size: 1.2rem;
+        }
+        .back {
+            background-color: #eef2ff;
+            transform: rotateY(180deg);
+            color: #333;
+            border: 2px solid var(--primary);
+        }
+        .front { font-weight: 600; color: var(--primary); }
+
+        /* Buttons */
+        .controls { display: flex; gap: 10px; justify-content: center; }
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-prev { background: #ddd; }
+        .btn-next { background: var(--primary); color: white; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        .category-tag {
+            font-size: 0.8rem;
+            background: #000;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>787 Study Tool</h1>
+    <div id="category" class="category-tag">System 1: CCS</div>
+    <div class="stats" id="stats">Card 1 of 50</div>
+
+    <div class="flashcard" onclick="this.classList.toggle('flipped')">
+        <div class="inner-card">
+            <div class="front" id="question">Loading...</div>
+            <div class="back" id="answer">Loading...</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-prev" onclick="prevCard()">Previous</button>
+        <button class="btn-next" onclick="nextCard()">Next Card</button>
+    </div>
+</div>
+
+<script>
+    // Data extracted from your provided list
+    const cardData = [
+        { s: "CCS", q: "What is the primary purpose of the Common Core System?", a: "Integrated modular avionics providing shared computing, networking, and I/O resources." },
+        { s: "CCS", q: "What are the three main subsystems of the CCS?", a: "CCR cabinets, the CDN, and RDCs." },
+        { s: "CCS", q: "How many CCR cabinets are on the airplane?", a: "Two." },
+        { s: "ELECTRICAL", q: "What are the primary AC power sources?", a: "Four VFSGs (Variable Frequency Starter Generators)." },
+        { s: "ELECTRICAL", q: "What is the nominal voltage of the main AC buses?", a: "235V AC." },
+        { s: "HYDRAULIC", q: "How many main hydraulic systems does the airplane have?", a: "Three (Left, Center, Right)." },
+        { s: "HYDRAULIC", q: "What is the nominal operating pressure?", a: "5,000 PSI." },
+        { s: "FLIGHT CONTROLS", q: "What are the three main applications of the IFCS?", a: "AFF, PFCF, and HLF." },
+        { s: "FUEL/NGS", q: "What is the purpose of the NGS?", a: "To decrease autoignition risk by increasing nitrogen concentration in fuel tanks." }
+    ];
+
+    let currentIndex = 0;
+
+    function updateCard() {
+        const card = cardData[currentIndex];
+        const flashcardElement = document.querySelector('.flashcard');
+        flashcardElement.classList.remove('flipped');
+        
+        setTimeout(() => {
+            document.getElementById('question').innerText = card.q;
+            document.getElementById('answer').innerText = card.a;
+            document.getElementById('category').innerText = card.s;
+            document.getElementById('stats').innerText = `Card ${currentIndex + 1} of ${cardData.length}`;
+        }, 150);
+    }
+
+    function nextCard() {
+        currentIndex = (currentIndex + 1) % cardData.length;
+        updateCard();
+    }
+
+    function prevCard() {
+        currentIndex = (currentIndex - 1 + cardData.length) % cardData.length;
+        updateCard();
+    }
+
+    // Initialize
+    updateCard();
+</script>
+
+</body>
+</html>
